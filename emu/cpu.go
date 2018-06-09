@@ -20,12 +20,11 @@ type CPU struct {
 func (c *CPU) Execute(memory *Memory) {
 	// https://en.wikipedia.org/wiki/Little_man_computer#Execution_cycle
 
-	var running = true
-	for ; running ; {
+	for running := true; running ; {
 		// 1. Decode instruction
 		var line = memory.GetValueAsLine(c.ProgramCounter.GetValue())
 		c.InstructionRegister.SetValue(int(line.Opcode))
-		c.AddressRegister.SetValue(line.Address)
+		c.AddressRegister.SetValue(line.Address.Address)
 
 		// 2. Increment PC
 		c.ProgramCounter.Increment()
@@ -48,16 +47,16 @@ func CreateLmcCpu() *CPU {
 
 		// Other
 		Instructions: map[asm.Opcode]Instruction{
-			asm.HLT: inst_hlt,
-			asm.ADD: inst_add,
-			asm.SUB: inst_sub,
-			asm.STA: inst_sta,
+			asm.OP_HLT: inst_hlt,
+			asm.OP_ADD: inst_add,
+			asm.OP_SUB: inst_sub,
+			asm.OP_STA: inst_sta,
 			// There is no 4
-			asm.LDA: inst_lda,
-			asm.BRA: inst_bra,
-			asm.BRZ: inst_brz,
-			asm.BRP: inst_brp,
-			asm.INP_OUT: inst_inp_out,
+			asm.OP_LDA: inst_lda,
+			asm.OP_BRA: inst_bra,
+			asm.OP_BRZ: inst_brz,
+			asm.OP_BRP: inst_brp,
+			asm.OP_INP_OUT: inst_inp_out,
 		},
 	}
 }

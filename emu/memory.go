@@ -37,7 +37,7 @@ func (m *Memory) GetValueAsLine(address int) asm.Line {
 		os.Exit(-1)
 	}
 
-	return asm.CreateLine(asm.Opcode(inst), addr)
+	return asm.CreateLine(asm.Opcode(inst), asm.CreateAddressRef(addr))
 }
 
 // Sets the integer value of a given memory address.

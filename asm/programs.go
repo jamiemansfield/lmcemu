@@ -4,25 +4,27 @@ package asm
 // See https://peterhigginson.co.uk/LMC/
 
 // Adds two numbers together.
-var AddProgram = [100]Line{
-	CreateLine(INP_OUT, 1),
-	CreateLine(STA, 99),
-	CreateLine(INP_OUT, 1),
-	CreateLine(ADD, 99),
-	CreateLine(INP_OUT, 2),
-	CreateLine(HLT, 0),
+var add_first = CreateLabelRef()
+var AddProgram = []Line{
+	INP(),
+	STA(add_first),
+	INP(),
+	ADD(add_first),
+	OUT(),
+	HLT(),
 }
 
 // Adds the first two numbers together,
 // subtracts the first from the third.
-var AddSubtProgram = [100]Line{
-	CreateLine(INP_OUT, 1),
-	CreateLine(STA, 99),
-	CreateLine(INP_OUT, 1),
-	CreateLine(ADD, 99),
-	CreateLine(INP_OUT, 2),
-	CreateLine(INP_OUT, 1),
-	CreateLine(SUB, 99),
-	CreateLine(INP_OUT, 2),
-	CreateLine(HLT, 0),
+var add_subt_first = CreateLabelRef()
+var AddSubtProgram = []Line{
+	INP(),
+	STA(add_subt_first),
+	INP(),
+	ADD(add_subt_first),
+	OUT(),
+	INP(),
+	SUB(add_subt_first),
+	OUT(),
+	HLT(),
 }
