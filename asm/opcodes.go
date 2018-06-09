@@ -1,4 +1,4 @@
-package emu
+package asm
 
 type Opcode int
 

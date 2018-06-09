@@ -1,10 +1,7 @@
 package emu
 
 import (
-	"strconv"
-	"os"
-	"fmt"
-	"strings"
+	"github.com/jamiemansfield/lmcemu/asm"
 )
 
 type Instruction func(cpu *CPU, memory *Memory) bool
@@ -17,7 +14,7 @@ type CPU struct {
 	Accumulator *Register
 
 	// Other
-	Instructions map[Opcode]Instruction
+	Instructions map[asm.Opcode]Instruction
 }
 
 func (c *CPU) Execute(memory *Memory) {
@@ -25,43 +22,18 @@ func (c *CPU) Execute(memory *Memory) {
 
 	var running = true
 	for ; running ; {
-		// 1. Get address of next opcode
-		var ocAddr = c.ProgramCounter.GetValue()
+		// 1. Decode instruction
+		var line = memory.GetValueAsLine(c.ProgramCounter.GetValue())
+		c.InstructionRegister.SetValue(int(line.Opcode))
+		c.AddressRegister.SetValue(line.Address)
 
-		// 2. Get next opcode
-		var oc = memory.GetValue(ocAddr)
-
-		// 3. Increment PC
+		// 2. Increment PC
 		c.ProgramCounter.Increment()
 
-		// 4. Decode instruction
-		{
-			// Convert to a string so I can splice
-			var strOc = strings.Replace(fmt.Sprintf("%3d", oc), " ", "0", -1)
-			// Get the instruction code
-			{
-				inst, err := strconv.Atoi(strOc[:1])
-				if err != nil {
-					panic(err)
-					os.Exit(-1)
-				}
-				c.InstructionRegister.SetValue(inst)
-			}
-			// Get the memory address
-			{
-				addr, err := strconv.Atoi(strOc[1:])
-				if err != nil {
-					panic(err)
-					os.Exit(-1)
-				}
-				c.AddressRegister.SetValue(addr)
-			}
-		}
+		// 3. Prep for execute
+		var inst = c.Instructions[asm.Opcode(c.InstructionRegister.GetValue())]
 
-		// 5. Prep for execute
-		var inst = c.Instructions[Opcode(c.InstructionRegister.GetValue())]
-
-		// 6. Execute
+		// 4. Execute
 		running = inst(c, memory);
 	}
 }
@@ -75,17 +47,17 @@ func CreateLmcCpu() *CPU {
 		Accumulator: CreateRegister(0),
 
 		// Other
-		Instructions: map[Opcode]Instruction{
-			HLT: inst_hlt,
-			ADD: inst_add,
-			SUB: inst_sub,
-			STA: inst_sta,
+		Instructions: map[asm.Opcode]Instruction{
+			asm.HLT: inst_hlt,
+			asm.ADD: inst_add,
+			asm.SUB: inst_sub,
+			asm.STA: inst_sta,
 			// There is no 4
-			LDA: inst_lda,
-			BRA: inst_bra,
-			BRZ: inst_brz,
-			BRP: inst_brp,
-			INP_OUT: inst_inp_out,
+			asm.LDA: inst_lda,
+			asm.BRA: inst_bra,
+			asm.BRZ: inst_brz,
+			asm.BRP: inst_brp,
+			asm.INP_OUT: inst_inp_out,
 		},
 	}
 }
