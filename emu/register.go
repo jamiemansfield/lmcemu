@@ -2,7 +2,6 @@ package emu
 
 // A representation of a register within a CPU.
 type Register struct {
-	Name string
 	value int
 }
 
@@ -29,9 +28,8 @@ func (r *Register) Increment() {
 }
 
 // Creates a register, using the provided data
-func CreateRegister(name string, initialValue int) *Register {
+func CreateRegister(initialValue int) *Register {
 	return &Register{
-		Name: name,
 		value: initialValue,
 	}
 }

@@ -65,3 +65,27 @@ func (c *CPU) Execute(memory *Memory) {
 		running = inst(c, memory);
 	}
 }
+
+func CreateLmcCpu() *CPU {
+	return &CPU{
+		// Registers
+		ProgramCounter: CreateRegister(0),
+		InstructionRegister: CreateRegister(0),
+		AddressRegister: CreateRegister(0),
+		Accumulator: CreateRegister(0),
+
+		// Other
+		Instructions: map[int]Instruction{
+			0: inst_hlt,
+			1: inst_add,
+			2: inst_sub,
+			3: inst_sto,
+			// There is no 4
+			5: inst_lda,
+			6: inst_bra,
+			7: inst_brz,
+			8: inst_brp,
+			9: inst_inp_out,
+		},
+	}
+}
