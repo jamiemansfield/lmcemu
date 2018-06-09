@@ -17,7 +17,7 @@ type CPU struct {
 	Accumulator *Register
 
 	// Other
-	Instructions map[int]Instruction
+	Instructions map[Opcode]Instruction
 }
 
 func (c *CPU) Execute(memory *Memory) {
@@ -59,7 +59,7 @@ func (c *CPU) Execute(memory *Memory) {
 		}
 
 		// 5. Prep for execute
-		var inst = c.Instructions[c.InstructionRegister.GetValue()]
+		var inst = c.Instructions[Opcode(c.InstructionRegister.GetValue())]
 
 		// 6. Execute
 		running = inst(c, memory);
@@ -75,17 +75,17 @@ func CreateLmcCpu() *CPU {
 		Accumulator: CreateRegister(0),
 
 		// Other
-		Instructions: map[int]Instruction{
-			0: inst_hlt,
-			1: inst_add,
-			2: inst_sub,
-			3: inst_sto,
+		Instructions: map[Opcode]Instruction{
+			HLT: inst_hlt,
+			ADD: inst_add,
+			SUB: inst_sub,
+			STA: inst_sta,
 			// There is no 4
-			5: inst_lda,
-			6: inst_bra,
-			7: inst_brz,
-			8: inst_brp,
-			9: inst_inp_out,
+			LDA: inst_lda,
+			BRA: inst_bra,
+			BRZ: inst_brz,
+			BRP: inst_brp,
+			INP_OUT: inst_inp_out,
 		},
 	}
 }

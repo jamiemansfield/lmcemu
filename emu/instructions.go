@@ -26,7 +26,7 @@ func inst_sub (cpu *CPU, memory *Memory) bool {
 	return true
 }
 
-func inst_sto (cpu *CPU, memory *Memory) bool {
+func inst_sta(cpu *CPU, memory *Memory) bool {
 	var accValue = cpu.Accumulator.GetValue()
 	var address = cpu.AddressRegister.GetValue()
 	memory.SetValue(address, accValue)
