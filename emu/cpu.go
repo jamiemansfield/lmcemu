@@ -22,9 +22,9 @@ func (c *CPU) Execute(memory *Memory) {
 
 	for running := true; running ; {
 		// 1. Decode instruction
-		var line = memory.GetValueAsLine(c.ProgramCounter.GetValue())
+		var line = DecodeInstruction(memory, c.ProgramCounter.GetValue())
 		c.InstructionRegister.SetValue(int(line.Opcode))
-		c.AddressRegister.SetValue(line.Address.Address)
+		c.AddressRegister.SetValue(line.Address)
 
 		// 2. Increment PC
 		c.ProgramCounter.Increment()

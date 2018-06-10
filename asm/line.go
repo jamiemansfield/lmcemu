@@ -1,26 +1,43 @@
 package asm
 
 type AddressRef struct {
-	Address int
+	address int
 }
 
-func (r *AddressRef) EvalAddress(label *int) int {
-	if r.Address == -1 {
-		*label++
-		r.Address = *label
+func (r *AddressRef) Evaluate(originalLabel int) (int, int) {
+	var label = originalLabel
+	if r.address == -1 {
+		label++
+		r.address = label
 	}
-	return r.Address
+	return r.address, label
 }
 
 func CreateAddressRef(a int) *AddressRef {
 	return &AddressRef{
-		Address: a,
+		address: a,
 	}
 }
 
 func CreateLabelRef() *AddressRef {
 	return &AddressRef{
-		Address: -1,
+		address: -1,
+	}
+}
+
+type EvaluatedLine struct {
+	Opcode Opcode
+	Address int
+}
+
+func (l *EvaluatedLine) Compile() int {
+	return int(l.Opcode) * 100 + l.Address
+}
+
+func CreateEvaluatedLine(opcode Opcode, address int) EvaluatedLine {
+	return EvaluatedLine{
+		Opcode: opcode,
+		Address: address,
 	}
 }
 
@@ -29,8 +46,12 @@ type Line struct {
 	Address *AddressRef
 }
 
-func (l *Line) Compile(label *int) int {
-	return int(l.Opcode) * 100 + l.Address.EvalAddress(label)
+func (l *Line) Evaluate(originalLabel int) (EvaluatedLine, int) {
+	addr, label := l.Address.Evaluate(originalLabel)
+	return EvaluatedLine{
+		Opcode: l.Opcode,
+		Address: addr,
+	}, label
 }
 
 func CreateLine(opcode Opcode, address *AddressRef) Line {
@@ -38,28 +59,4 @@ func CreateLine(opcode Opcode, address *AddressRef) Line {
 		Opcode: opcode,
 		Address: address,
 	}
-}
-
-func HLT() Line {
-	return CreateLine(OP_HLT, CreateAddressRef(0))
-}
-
-func ADD(address *AddressRef) Line {
-	return CreateLine(OP_ADD, address)
-}
-
-func SUB(address *AddressRef) Line {
-	return CreateLine(OP_SUB, address)
-}
-
-func STA(address *AddressRef) Line {
-	return CreateLine(OP_STA, address)
-}
-
-func INP() Line {
-	return CreateLine(OP_INP_OUT, CreateAddressRef(1))
-}
-
-func OUT() Line {
-	return CreateLine(OP_INP_OUT, CreateAddressRef(2))
 }
