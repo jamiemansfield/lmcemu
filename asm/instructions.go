@@ -16,15 +16,10 @@ const (
 type Instruction struct {
 	Type InstructionType
 	Opcode Opcode
-
-	// Un-evaluated
 	AddressRef *AddressRef
 
 	// Labeled
 	Label *AddressRef
-
-	// Evaluated
-	Address int
 	Value int
 }
 
@@ -32,8 +27,8 @@ type Instruction struct {
 // NOTE: The address reference should have /already/ been evaluated
 func (i *Instruction) Evaluate() (*EvaluatedInstruction, error) {
 	// Check for errors
-	if i.Address <= -1 {
-		return nil, errors.New("Invalid instruction address of '" + strconv.Itoa(i.Address) + "'!")
+	if i.AddressRef.Address <= -1 {
+		return nil, errors.New("Invalid instruction address of '" + strconv.Itoa(i.AddressRef.Address) + "'!")
 	}
 	if i.Type == LABELED && i.Value <= -1 {
 		return nil, errors.New("Invalid instruction value of '" + strconv.Itoa(i.Value) + "'!")

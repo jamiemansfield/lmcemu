@@ -1,5 +1,7 @@
 package asm
 
+// DSL-like functionality for creating instructions.
+
 func DAT(address *AddressRef) *Instruction {
 	return CreateInstruction(OP_DAT, address)
 }
