@@ -1,12 +1,26 @@
 package asm
 
-func AssembleProgram(lines []Line) [100]int {
+func AssembleProgram(lines []*Instruction) ([100]int, error) {
 	var compiled = [100]int{}
-	var label = len(lines)
+
+	// Evaluate DAT operations
 	for k, line := range lines {
-		eval, newLabel := line.Evaluate(label)
-		compiled[k] = eval.Compile()
-		label = newLabel
+		if line.Opcode == OP_DAT {
+			line.AddressRef.Address = k
+		} else
+		if line.Type == LABELED {
+			line.Label.Address = k
+		}
 	}
-	return compiled
+
+	// Compile
+	for k, line := range lines {
+		inst, err := line.Evaluate()
+		if err != nil {
+			return [100]int{}, err
+		}
+		compiled[k] = inst.Compile()
+	}
+
+	return compiled, nil
 }

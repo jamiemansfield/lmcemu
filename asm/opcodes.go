@@ -3,6 +3,7 @@ package asm
 type Opcode int
 
 const (
+	OP_DAT     Opcode = -1
 	OP_HLT     Opcode = 0
 	OP_ADD     Opcode = 1
 	OP_SUB     Opcode = 2

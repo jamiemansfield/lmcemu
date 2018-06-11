@@ -1,30 +1,44 @@
 package asm
 
-// Some basic programs for testing purposes
-// See https://peterhigginson.co.uk/LMC/
+var start    = CreateLabelRef()
+var addition = CreateLabelRef()
+var subtract = CreateLabelRef()
+var end      = CreateLabelRef()
 
-// Adds two numbers together.
-var add_first = CreateLabelRef()
-var AddProgram = []Line{
-	INP(),
-	STA(add_first),
-	INP(),
-	ADD(add_first),
-	OUT(),
-	HLT(),
-}
+var mode     = CreateAddressRef(1)
+var value_o  = CreateAddressRef(1)
+var value_t  = CreateAddressRef(2)
 
-// Adds the first two numbers together,
-// subtracts the first from the third.
-var add_subt_first = CreateLabelRef()
-var AddSubtProgram = []Line{
+var Calculator = []*Instruction {
+	// START:
+	start.Apply(INP()),
+	STA(mode),
+
 	INP(),
-	STA(add_subt_first),
+	STA(value_o),
 	INP(),
-	ADD(add_subt_first),
-	OUT(),
-	INP(),
-	SUB(add_subt_first),
-	OUT(),
+	STA(value_t),
+
+	LDA(mode),
+	BRZ(addition),
+	BRA(subtract),
+
+	// ADDITION:
+	addition.Apply(LDA(value_o)),
+	ADD(value_t),
+	BRA(end),
+
+	// SUBTRACT:
+	subtract.Apply(LDA(value_o)),
+	SUB(value_t),
+	BRA(end),
+
+	// END:
+	end.Apply(OUT()),
 	HLT(),
+
+	// Data
+	DAT(mode),
+	DAT(value_o),
+	DAT(value_t),
 }

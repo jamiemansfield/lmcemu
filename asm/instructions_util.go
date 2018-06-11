@@ -1,4 +1,4 @@
-package new_asm
+package asm
 
 func DAT(address *AddressRef) *Instruction {
 	return CreateInstruction(OP_DAT, address)

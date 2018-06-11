@@ -2,14 +2,14 @@ package main
 
 import (
 	"fmt"
-	"github.com/jamiemansfield/lmcemu/new-asm"
+	"github.com/jamiemansfield/lmcemu/asm"
 	"log"
 	"github.com/jamiemansfield/lmcemu/emu"
 )
 
 func main() {
 	// Assemble the program.
-	prog, err := new_asm.AssembleProgram(new_asm.Calculator)
+	prog, err := asm.AssembleProgram(asm.Calculator)
 	if err != nil {
 		log.Fatal(err)
 		return

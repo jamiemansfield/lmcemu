@@ -1,4 +1,4 @@
-package new_asm
+package asm
 
 import (
 	"errors"
