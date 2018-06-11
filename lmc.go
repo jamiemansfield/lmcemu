@@ -1,14 +1,29 @@
 package main
 
 import (
-	"github.com/jamiemansfield/lmcemu/new-asm"
 	"fmt"
+	"github.com/jamiemansfield/lmcemu/new-asm"
+	"log"
+	"github.com/jamiemansfield/lmcemu/emu"
 )
 
 func main() {
-	//cpu := emu.CreateLmcCpu()
-	//memory := emu.CreateMemory(asm.AssembleProgram(asm.AddSubtProgram))
-	//cpu.Execute(memory)
+	// Assemble the program.
+	prog, err := new_asm.AssembleProgram(new_asm.Calculator)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
 
-	fmt.Printf("%v", new_asm.AssembleProgram(new_asm.Calculator))
+	// Debug assembly
+	if false {
+		fmt.Printf("%v", prog)
+	}
+
+	// Run
+	if true {
+		cpu := emu.CreateLmcCpu()
+		memory := emu.CreateMemory(prog)
+		cpu.Execute(memory)
+	}
 }

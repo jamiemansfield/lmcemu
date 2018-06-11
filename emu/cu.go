@@ -1,18 +1,18 @@
 package emu
 
 import (
-	"github.com/jamiemansfield/lmcemu/asm"
 	"strings"
 	"fmt"
 	"strconv"
 	"os"
+	"github.com/jamiemansfield/lmcemu/new-asm"
 )
 
 // This file has a number of functions that can be associated with the
 // Control Unit of a CPU.
 
 // Gets the value of the given memory address, as an EvaluatedLine.
-func DecodeInstruction(memory *Memory, address int) asm.EvaluatedLine {
+func DecodeInstruction(memory *Memory, address int) *new_asm.EvaluatedInstruction {
 	// Convert to a string so I can splice
 	var strOc = strings.Replace(fmt.Sprintf("%3d", memory.GetValue(address)), " ", "0", -1)
 
@@ -30,5 +30,5 @@ func DecodeInstruction(memory *Memory, address int) asm.EvaluatedLine {
 		os.Exit(-1)
 	}
 
-	return asm.CreateEvaluatedLine(asm.Opcode(inst), addr)
+	return new_asm.CreateEvaluatedInstruction(new_asm.NORMAL, new_asm.Opcode(inst), addr, -1)
 }

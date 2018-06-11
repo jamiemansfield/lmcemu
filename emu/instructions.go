@@ -34,7 +34,7 @@ func inst_sta(cpu *CPU, memory *Memory) bool {
 }
 
 func inst_lda (cpu *CPU, memory *Memory) bool {
-	cpu.Accumulator.SetValue(cpu.AddressRegister.GetValue())
+	cpu.Accumulator.SetValue(memory.GetValue(cpu.AddressRegister.GetValue()))
 	return true
 }
 
