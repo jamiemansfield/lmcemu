@@ -24,6 +24,9 @@ func main() {
 	if true {
 		cpu := emu.CreateLmcCpu()
 		memory := emu.CreateMemory(prog)
-		cpu.Execute(memory)
+		if cpu.Execute(memory) != nil {
+			log.Fatal(err)
+			return
+		}
 	}
 }

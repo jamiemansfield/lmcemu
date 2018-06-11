@@ -18,12 +18,16 @@ type CPU struct {
 	Instructions map[new_asm.Opcode]Instruction
 }
 
-func (c *CPU) Execute(memory *Memory) {
+func (c *CPU) Execute(memory *Memory) error {
 	// https://en.wikipedia.org/wiki/Little_man_computer#Execution_cycle
 
 	for running := true; running ; {
 		// 1. Decode instruction
-		var line = DecodeInstruction(memory, c.ProgramCounter.GetValue())
+		line, err := DecodeInstruction(memory, c.ProgramCounter.GetValue())
+		if err != nil {
+			return err
+		}
+
 		c.InstructionRegister.SetValue(int(line.Opcode))
 		c.AddressRegister.SetValue(line.Address)
 
@@ -41,6 +45,8 @@ func (c *CPU) Execute(memory *Memory) {
 			fmt.Printf("%v\n", memory.values)
 		}
 	}
+
+	return nil
 }
 
 func CreateLmcCpu() *CPU {
