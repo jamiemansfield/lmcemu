@@ -1,13 +1,13 @@
 package asm
 
-var start    = CreateLabelRef()
-var addition = CreateLabelRef()
-var subtract = CreateLabelRef()
-var end      = CreateLabelRef()
+var start    = CreatePositionLabel()
+var addition = CreatePositionLabel()
+var subtract = CreatePositionLabel()
+var end      = CreatePositionLabel()
 
-var mode     = CreateAddressRef(1)
-var value_o  = CreateAddressRef(1)
-var value_t  = CreateAddressRef(2)
+var mode     = CreateDataLabel(1)
+var value_o  = CreateDataLabel(1)
+var value_t  = CreateDataLabel(2)
 
 var Calculator = []*Instruction {
 	// START:

@@ -8,7 +8,7 @@ func AssembleProgram(lines []*Instruction) ([100]int, error) {
 		if line.Opcode == OP_DAT {
 			line.AddressRef.Address = k
 		} else
-		if line.Type == LABELED {
+		if line.Type == INST_LABELED {
 			line.Label.Address = k
 		}
 	}

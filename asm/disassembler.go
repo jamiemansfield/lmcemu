@@ -22,5 +22,5 @@ func DisassembleInstruction(instruction int) (*EvaluatedInstruction, error) {
 		return nil, err
 	}
 
-	return CreateEvaluatedInstruction(NORMAL, Opcode(inst), addr, -1), nil
+	return CreateEvaluatedInstruction(INST_NORMAL, Opcode(inst), addr, -1), nil
 }

@@ -8,8 +8,8 @@ import (
 type InstructionType int
 
 const (
-	NORMAL  InstructionType = iota
-	LABELED
+	INST_NORMAL  InstructionType = iota
+	INST_LABELED
 )
 
 // Represents un-evaluated instructions.
@@ -20,7 +20,6 @@ type Instruction struct {
 
 	// Labeled
 	Label *AddressRef
-	Value int
 }
 
 // Evaluates an instruction.
@@ -28,27 +27,32 @@ type Instruction struct {
 func (i *Instruction) Evaluate() (*EvaluatedInstruction, error) {
 	// Check for errors
 	if i.AddressRef.Address <= -1 {
+		if i.AddressRef.Type == ADDR_LABEL_POSITION {
+			return nil, errors.New("Undefined labeled position!")
+		}
+		if i.AddressRef.Type == ADDR_LABEL_DATA {
+			return nil, errors.New("Undefined labeled data!")
+		}
 		return nil, errors.New("Invalid instruction address of '" + strconv.Itoa(i.AddressRef.Address) + "'!")
 	}
-	if i.Type == LABELED && i.Value <= -1 {
-		return nil, errors.New("Invalid instruction value of '" + strconv.Itoa(i.Value) + "'!")
+	if i.Type == INST_LABELED && i.AddressRef.Value <= -1 {
+		return nil, errors.New("Invalid instruction value of '" + strconv.Itoa(i.AddressRef.Value) + "'!")
 	}
 
-	return CreateEvaluatedInstruction(i.Type, i.Opcode, i.AddressRef.Address, i.Value), nil
+	return CreateEvaluatedInstruction(i.Type, i.Opcode, i.AddressRef.Address, i.AddressRef.Value), nil
 }
 
 func CreateInstruction(opcode Opcode, address *AddressRef) *Instruction {
 	return &Instruction{
-		Type:       NORMAL,
+		Type:       INST_NORMAL,
 		Opcode:     opcode,
 		AddressRef: address,
-		Value:      address.Address,
 	}
 }
 
 // Represents an evaluated instruction.
 type EvaluatedInstruction struct {
-	Type InstructionType
+	Type InstructionType // TODO: eliminate type on evaluated instructions
 	Opcode Opcode
 	Address int
 	Value int

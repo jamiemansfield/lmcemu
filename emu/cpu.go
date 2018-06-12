@@ -27,7 +27,6 @@ func (c *CPU) Execute(memory *Memory) error {
 		if err != nil {
 			return err
 		}
-
 		c.InstructionRegister.SetValue(int(line.Opcode))
 		c.AddressRegister.SetValue(line.Address)
 
@@ -59,10 +58,10 @@ func CreateLmcCpu() *CPU {
 
 		// Other
 		Instructions: map[asm.Opcode]Instruction{
-			asm.OP_HLT: inst_hlt,
-			asm.OP_ADD: inst_add,
-			asm.OP_SUB: inst_sub,
-			asm.OP_STA: inst_sta,
+			asm.OP_HLT:     inst_hlt,
+			asm.OP_ADD:     inst_add,
+			asm.OP_SUB:     inst_sub,
+			asm.OP_STA:     inst_sta,
 			// There is no 4
 			asm.OP_LDA:     inst_lda,
 			asm.OP_BRA:     inst_bra,
