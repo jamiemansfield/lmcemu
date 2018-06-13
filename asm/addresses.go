@@ -54,3 +54,7 @@ func CreateDataLabel(value int) *AddressRef {
 		Value: value,
 	}
 }
+
+func IsValidAddress(address int) bool {
+	return address >= 0 && address <= 999
+}

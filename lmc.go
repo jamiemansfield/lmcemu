@@ -15,13 +15,15 @@ func main() {
 		return
 	}
 
+	debug := false
+
 	// Debug assembly
-	if true {
+	if debug {
 		fmt.Printf("%v", prog)
 	}
 
 	// Run
-	if false {
+	if !debug {
 		cpu := emu.CreateLmcCpu()
 		memory := emu.CreateMemory(prog)
 		if cpu.Execute(memory) != nil {
