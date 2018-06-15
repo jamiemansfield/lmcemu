@@ -9,7 +9,7 @@ import (
 
 func main() {
 	// Assemble the program.
-	prog, err := asm.AssembleProgram(asm.Calculator)
+	prog, err := asm.AssembleProgram(Calculator)
 	if err != nil {
 		log.Fatal(err)
 		return

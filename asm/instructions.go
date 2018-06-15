@@ -35,9 +35,6 @@ func (i *Instruction) Evaluate() (*EvaluatedInstruction, error) {
 		}
 		return nil, errors.New("Invalid instruction address of '" + strconv.Itoa(i.AddressRef.Address) + "'!")
 	}
-	if i.Type == INST_LABELED && !IsValidAddress(i.AddressRef.Value) {
-		return nil, errors.New("Invalid instruction value of '" + strconv.Itoa(i.AddressRef.Value) + "'!")
-	}
 
 	// Handle Data properly
 	if i.Opcode == OP_DAT {
