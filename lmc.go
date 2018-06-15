@@ -5,11 +5,16 @@ import (
 	"github.com/jamiemansfield/lmcemu/asm"
 	"log"
 	"github.com/jamiemansfield/lmcemu/emu"
+	"os"
 )
 
 func main() {
+	// Read asm from file
+	file, err := os.Open("calculator.asm")
+	defer file.Close()
+
 	// Assemble the program.
-	prog, err := asm.AssembleProgram(Calculator)
+	prog, err := asm.AssembleProgram(asm.TokeniseFile(file).Assemble())
 	if err != nil {
 		log.Fatal(err)
 		return
