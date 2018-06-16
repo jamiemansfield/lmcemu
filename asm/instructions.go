@@ -14,12 +14,12 @@ const (
 
 // Represents un-evaluated instructions.
 type Instruction struct {
-	Type InstructionType
-	Opcode Opcode
-	AddressRef *AddressRef
+	Type InstructionType `json:"type"`
+	Opcode Opcode `json:"opcode"`
+	AddressRef *AddressRef `json:"ref"`
 
 	// Labeled
-	Label *AddressRef
+	Label *AddressRef `json:"label"`
 }
 
 // Evaluates an instruction.

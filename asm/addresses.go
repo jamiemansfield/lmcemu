@@ -14,9 +14,9 @@ func (t AddressType) IsLabel() bool {
 
 // An address reference.
 type AddressRef struct {
-	Type AddressType
-	Address int
-	Value int
+	Type AddressType `json:"type"`
+	Address int `json:"address"`
+	Value int `json:"value"`
 }
 
 // Applies the label to an instruction to create a

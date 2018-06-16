@@ -193,6 +193,11 @@ func getInstruction2(token1 *Token, token2 *Token, refs AddressRegistry) *Instru
 
 
 func getInstruction3(token1 *Token, token2 *Token, token3 *Token, refs AddressRegistry) *Instruction {
+	// Handle Data
+	if token1.Type == TKN_LABEL && token2.Type == TKN_DAT {
+		return DAT(refs.GetMapping(token1.Name))
+	}
+
 	return refs.GetMapping(token1.Name).Apply(getInstruction2(token2, token3, refs))
 }
 

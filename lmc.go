@@ -13,6 +13,9 @@ func main() {
 	file, err := os.Open("calculator.asm")
 	defer file.Close()
 
+	//bytes, err := json.MarshalIndent(asm.TokeniseFile(file).Assemble(), "", "\t")
+	//fmt.Println(string(bytes))
+
 	// Assemble the program.
 	prog, err := asm.AssembleProgram(asm.TokeniseFile(file).Assemble())
 	if err != nil {
