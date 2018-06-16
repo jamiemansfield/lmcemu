@@ -3,9 +3,9 @@ package asm
 import (
 	"os"
 	"bufio"
-	"strings"
 	"strconv"
 	"errors"
+	"strings"
 )
 
 type TokenType int
@@ -37,6 +37,15 @@ func (t TokenType) NeedsMore() bool {
 		return false
 	}
 	return true
+}
+
+type AddressRegistry map[string]*AddressRef
+
+func (r AddressRegistry) GetMapping(labelName string) *AddressRef {
+	if r[labelName] == nil {
+		panic("bad")
+	}
+	return r[labelName]
 }
 
 type Token struct {
@@ -96,11 +105,11 @@ func (f TokenisedFile) Assemble() []*Instruction {
 
 	for _, line := range f {
 		// Positions
-		if line[0].Type == TKN_LABEL && line[1].Type != TKN_DAT && refs[line[0].Name] != nil {
+		if line[0].Type == TKN_LABEL && line[1].Type != TKN_DAT && refs[line[0].Name] == nil {
 			refs[line[0].Name] = CreatePositionLabel()
 		}
 		// Data
-		if line[1].Type == TKN_DAT && refs[line[0].Name] != nil {
+		if line[0].Type == TKN_LABEL && line[1].Type == TKN_DAT && refs[line[0].Name] == nil {
 			val, err := strconv.Atoi(line[2].Name)
 			if err != nil {
 				panic(err) // TODO:
@@ -110,8 +119,8 @@ func (f TokenisedFile) Assemble() []*Instruction {
 	}
 
 	// Create instructions
-	var instructions = []*Instruction{}
-	for k, line := range f {
+	var instructions []*Instruction
+	for _, line := range f {
 		var instruction *Instruction
 
 		if len(line) == 1 {
@@ -124,7 +133,7 @@ func (f TokenisedFile) Assemble() []*Instruction {
 			instruction = getInstruction3(line[0], line[1], line[2], refs)
 		}
 
-		instructions[k] = instruction
+		instructions = append(instructions, instruction)
 	}
 
 	return instructions
@@ -143,16 +152,16 @@ func getInstruction1(token1 *Token) *Instruction {
 	panic(errors.New("bad"))
 }
 
-func getInstruction2(token1 *Token, token2 *Token, refs map[string]*AddressRef) *Instruction {
+func getInstruction2(token1 *Token, token2 *Token, refs AddressRegistry) *Instruction {
 	// Position
 	if token1.Type == TKN_LABEL {
-		return refs[token1.Name].Apply(getInstruction1(token2))
+		return refs.GetMapping(token1.Name).Apply(getInstruction1(token2))
 	}
 
 	// Requires address
 	var ref *AddressRef
 	if token2.Type == TKN_LABEL {
-		ref = refs[token2.Name]
+		ref = refs.GetMapping(token2.Name)
 	} else {
 		val, err := strconv.Atoi(token2.Name)
 		if err != nil {
@@ -183,8 +192,8 @@ func getInstruction2(token1 *Token, token2 *Token, refs map[string]*AddressRef) 
 }
 
 
-func getInstruction3(token1 *Token, token2 *Token, token3 *Token, refs map[string]*AddressRef) *Instruction {
-	return refs[token1.Name].Apply(getInstruction2(token2, token3, refs))
+func getInstruction3(token1 *Token, token2 *Token, token3 *Token, refs AddressRegistry) *Instruction {
+	return refs.GetMapping(token1.Name).Apply(getInstruction2(token2, token3, refs))
 }
 
 func TokeniseFile(file *os.File) TokenisedFile {
@@ -192,13 +201,17 @@ func TokeniseFile(file *os.File) TokenisedFile {
 
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		var line = []*Token{}
+		var str = scanner.Text()
 
-		for _, v := range strings.Split(scanner.Text(), " ") {
-			line = append(line, GetToken(v))
+		if len(str) > 0 {
+			var line []*Token
+
+			for _, v := range strings.Fields(str) {
+				line = append(line, GetToken(v))
+			}
+
+			lines = append(lines, line)
 		}
-
-		lines = append(lines, line)
 	}
 
 	return lines
