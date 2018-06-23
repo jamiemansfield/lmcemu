@@ -8,7 +8,7 @@ import (
 	"strings"
 	"errors"
 	"fmt"
-	"github.com/lunny/log"
+	"log"
 )
 
 type Parser struct {
@@ -53,7 +53,7 @@ func (p *Parser) Assemble() ([]*Instruction, error) {
 	for !p.tokenQueue.Empty() {
 		inst, err := p.parseInstruction()
 		if err != nil {
-			log.Error(err)
+			log.Println(err)
 			failed = true
 		} else {
 			instructions = append(instructions, inst)
