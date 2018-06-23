@@ -9,6 +9,7 @@ import (
 	"github.com/jamiemansfield/lmcemu/asm"
 	"encoding/json"
 	"github.com/jamiemansfield/lmcemu/emu"
+	"github.com/mileusna/conditional"
 )
 
 func main() {
@@ -37,7 +38,7 @@ func main() {
 
 				var instructions []*asm.Instruction
 				if uri.Scheme == "file" || uri.Scheme == "" {
-					file, err := os.Open(uri.Opaque)
+					file, err := os.Open(conditional.String(uri.Scheme == "", uri.Path, uri.Opaque))
 					if err != nil {
 						return err
 					}
@@ -95,7 +96,7 @@ func main() {
 
 				var instructions []*asm.Instruction
 				if uri.Scheme == "file" || uri.Scheme == "" {
-					file, err := os.Open(uri.Opaque)
+					file, err := os.Open(conditional.String(uri.Scheme == "", uri.Path, uri.Opaque))
 					if err != nil {
 						return err
 					}
@@ -151,7 +152,7 @@ func main() {
 
 				var instructions []*asm.Instruction
 				if uri.Scheme == "file" || uri.Scheme == "" {
-					file, err := os.Open(uri.Opaque)
+					file, err := os.Open(conditional.String(uri.Scheme == "", uri.Path, uri.Opaque))
 					if err != nil {
 						return err
 					}
