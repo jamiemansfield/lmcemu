@@ -11,6 +11,15 @@ import (
 	"log"
 )
 
+type AddressRegistry map[string]*AddressRef
+
+func (r AddressRegistry) GetMapping(labelName string) *AddressRef {
+	if r[labelName] == nil {
+		r[labelName] = CreateAddressRef(-1)
+	}
+	return r[labelName]
+}
+
 type Parser struct {
 	tokenQueue *lane.Queue
 	addressRegistry AddressRegistry
@@ -71,8 +80,8 @@ func (p *Parser) parseInstruction() (*Instruction, error) {
 
 	// Labeled instructions
 	if token.Type == TKN_LABEL {
+		label := p.addressRegistry.GetMapping(token.Name)
 		nextToken := p.tokenQueue.Head().(*Token)
-		label := p.addressRegistry.GetMapping(nextToken.Name)
 
 		// Data Label
 		if nextToken.Type == TKN_DAT {
@@ -144,8 +153,6 @@ func (p *Parser) parseInstruction() (*Instruction, error) {
 		return BRZ(ref), nil
 	case TKN_BRP:
 		return BRP(ref), nil
-	case TKN_DAT:
-		return DAT(ref), nil
 	}
 
 	// If we're still here error out

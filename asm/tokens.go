@@ -25,15 +25,6 @@ const (
 	TKN_LABEL
 )
 
-type AddressRegistry map[string]*AddressRef
-
-func (r AddressRegistry) GetMapping(labelName string) *AddressRef {
-	if r[labelName] == nil {
-		r[labelName] = CreateAddressRef(-1)
-	}
-	return r[labelName]
-}
-
 type Token struct {
 	Type TokenType
 	Name string
