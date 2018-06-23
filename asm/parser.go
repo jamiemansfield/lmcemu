@@ -7,11 +7,14 @@ import (
 	"bufio"
 	"strings"
 	"errors"
+	"fmt"
+	"github.com/lunny/log"
 )
 
 type Parser struct {
 	tokenQueue *lane.Queue
 	addressRegistry AddressRegistry
+	sourceName string
 }
 
 func CreateParser() *Parser {
@@ -22,6 +25,15 @@ func CreateParser() *Parser {
 }
 
 func (p *Parser) ReadFromFile(file *os.File) {
+	info, err := file.Stat()
+	if err == nil {
+		p.sourceName = info.Name()
+	} else {
+		p.sourceName = "unknown"
+		fmt.Println(errors.New("parser('unknown'): a non-fatal error has occurred"))
+		fmt.Println(err)
+	}
+
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		var str = scanner.Text()
@@ -37,14 +49,20 @@ func (p *Parser) ReadFromFile(file *os.File) {
 func (p *Parser) Assemble() ([]*Instruction, error) {
 	// Create instructions
 	var instructions []*Instruction
+	failed := false
 	for !p.tokenQueue.Empty() {
 		inst, err := p.parseInstruction()
 		if err != nil {
-			return nil, err
+			log.Error(err)
+			failed = true
+		} else {
+			instructions = append(instructions, inst)
 		}
-		instructions = append(instructions, inst)
 	}
 
+	if failed {
+		return nil, fmt.Errorf("parser('%s'): failed to parse, see errors above", p.sourceName)
+	}
 	return instructions, nil
 }
 
@@ -71,7 +89,7 @@ func (p *Parser) parseInstruction() (*Instruction, error) {
 				// Create the instruction
 				return DAT(label), nil
 			}
-			return nil, errors.New("Invalid input supplied!")
+			return nil, fmt.Errorf("parser('%s'): invalid argument provided - '%s'", p.sourceName, nextNextToken.Name)
 		}
 
 		// Position Label
@@ -100,12 +118,14 @@ func (p *Parser) parseInstruction() (*Instruction, error) {
 	var ref *AddressRef
 	if nextToken.Type == TKN_LABEL {
 		ref = p.addressRegistry.GetMapping(nextToken.Name)
-	} else {
-		val, err := strconv.Atoi(nextToken.Name)
-		if err != nil {
-			return nil, err
-		}
+	} else
+	if nextToken.Type == TKN_VALUE {
+		// Parse the integer value - we can ignore the error as it should NEVER
+		// fail as it needs to pass to be identified as TKN_VALUE.
+		val, _ := strconv.Atoi(nextToken.Name)
 		ref = CreateAddressRef(val)
+	} else {
+		return nil, fmt.Errorf("parser('%s'): invalid argument provided - '%s %s'", p.sourceName, token.Name, nextToken.Name)
 	}
 
 	// Create the instruction
@@ -129,5 +149,5 @@ func (p *Parser) parseInstruction() (*Instruction, error) {
 	}
 
 	// If we're still here error out
-	return nil, errors.New("Invalid input supplied!")
+	return nil, fmt.Errorf("parser('%s'): unknown token '%s' used", p.sourceName, token.Name)
 }

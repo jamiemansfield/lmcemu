@@ -1,8 +1,7 @@
 package asm
 
 import (
-	"errors"
-	"strconv"
+	"fmt"
 )
 
 type InstructionType int
@@ -28,18 +27,18 @@ func (i *Instruction) Evaluate() (*EvaluatedInstruction, error) {
 	// Check for errors
 	if !IsValidAddress(i.AddressRef.Address) {
 		if i.AddressRef.Type == ADDR_LABEL_POSITION {
-			return nil, errors.New("Undefined labeled position!")
+			return nil, fmt.Errorf("compiler: unevaluated reference to labeled position '%d' used as an argument", i.AddressRef.Address)
 		}
 		if i.AddressRef.Type == ADDR_LABEL_DATA {
-			return nil, errors.New("Undefined labeled data!")
+			return nil, fmt.Errorf("compiler: unevaluated reference to labeled data '%d' used as an argument", i.AddressRef.Address)
 		}
-		return nil, errors.New("Invalid instruction address of '" + strconv.Itoa(i.AddressRef.Address) + "'!")
+		return nil, fmt.Errorf("compiler: invalid address '%d' used", i.AddressRef.Address)
 	}
 
 	// Handle Data properly
 	if i.Opcode == OP_DAT {
 		if !IsValidAddress(i.AddressRef.Value) {
-			return nil, errors.New("Invalid default data value of '" + strconv.Itoa(i.AddressRef.Value) + "'!")
+			return nil, fmt.Errorf("compiler: invalid data value '%d'", i.AddressRef.Address)
 		}
 		return DisassembleInstruction(i.AddressRef.Value)
 	}
