@@ -1,60 +1,204 @@
 package main
 
 import (
+	"github.com/urfave/cli"
+	"os"
+	"log"
+	"net/url"
 	"fmt"
 	"github.com/jamiemansfield/lmcemu/asm"
-	"log"
-	"os"
 	"encoding/json"
 	"github.com/jamiemansfield/lmcemu/emu"
 )
 
 func main() {
-	// Read asm from file
-	file, err := os.Open("calculator.asm")
-	defer file.Close()
+	app := cli.NewApp()
+	app.Name = "lmcemu"
+	app.Usage = "a Little Man Computer emulator"
+	app.Version = "1.0.0-indev"
 
-	// Create a Parser and parse the file
-	parser := asm.CreateParser()
-	parser.ReadFromFile(file)
+	app.Commands = []cli.Command{
+		{
+			Name:    "compile",
+			Aliases: []string{"c"},
+			Usage:   "compiles the given assembly file to machine code",
+			Flags:   []cli.Flag {
+				cli.StringFlag{
+					Name: "input, i",
+					Usage: "the input file or URI",
+				},
+			},
+			Action:  func(c *cli.Context) error {
+				input := c.String("input")
+				uri, err := url.Parse(input)
+				if err != nil {
+					return err
+				}
 
-	// Assemble the program.
-	instructions, err := parser.Assemble()
+				var instructions []*asm.Instruction
+				if uri.Scheme == "file" || uri.Scheme == "" {
+					file, err := os.Open(uri.Opaque)
+					if err != nil {
+						return err
+					}
+					defer file.Close()
+
+					// Create a Parser and parse the file
+					parser := asm.CreateParser()
+					parser.ReadFromFile(file)
+
+					// Assemble the program.
+					insts, err := parser.Assemble()
+					if err != nil {
+						return err
+					}
+					instructions = insts
+				} else
+				if uri.Scheme == "builtin" {
+					insts := BuiltinRegistry[uri.Opaque]
+					if insts == nil {
+						return fmt.Errorf("compile: a builtin program of name '%s' does not exist", uri.Opaque)
+					}
+					instructions = insts
+				} else {
+					return fmt.Errorf("compile: unsupported URI scheme ('%s') used", uri.Scheme)
+				}
+
+				// Assemble the program into machine code
+				prog, err := asm.AssembleProgram(instructions)
+				if err != nil {
+					return err
+				}
+
+				// Print the machine code
+				fmt.Printf("%v", prog)
+
+				return nil
+			},
+		},
+		{
+			Name:    "dump",
+			Aliases: []string{"d"},
+			Usage:   "dumps the given assembly file as a JSON output",
+			Flags:   []cli.Flag {
+				cli.StringFlag{
+					Name: "input, i",
+					Usage: "the input file or URI",
+				},
+			},
+			Action:  func(c *cli.Context) error {
+				input := c.String("input")
+				uri, err := url.Parse(input)
+				if err != nil {
+					return err
+				}
+
+				var instructions []*asm.Instruction
+				if uri.Scheme == "file" || uri.Scheme == "" {
+					file, err := os.Open(uri.Opaque)
+					if err != nil {
+						return err
+					}
+					defer file.Close()
+
+					// Create a Parser and parse the file
+					parser := asm.CreateParser()
+					parser.ReadFromFile(file)
+
+					// Assemble the program.
+					insts, err := parser.Assemble()
+					if err != nil {
+						return err
+					}
+					instructions = insts
+				} else
+				if uri.Scheme == "builtin" {
+					insts := BuiltinRegistry[uri.Opaque]
+					if insts == nil {
+						return fmt.Errorf("compile: a builtin program of name '%s' does not exist", uri.Opaque)
+					}
+					instructions = insts
+				} else {
+					return fmt.Errorf("compile: unsupported URI scheme ('%s') used", uri.Scheme)
+				}
+
+				// Dump in JSON form
+				bytes, err := json.MarshalIndent(instructions, "", "\t")
+				if err != nil {
+					return err
+				}
+				fmt.Println(string(bytes))
+
+				return nil
+			},
+		},
+		{
+			Name:    "run",
+			Aliases: []string{"r"},
+			Usage:   "runs the given assembly file",
+			Flags:   []cli.Flag {
+				cli.StringFlag{
+					Name: "input, i",
+					Usage: "the input file or URI",
+				},
+			},
+			Action:  func(c *cli.Context) error {
+				input := c.String("input")
+				uri, err := url.Parse(input)
+				if err != nil {
+					return err
+				}
+
+				var instructions []*asm.Instruction
+				if uri.Scheme == "file" || uri.Scheme == "" {
+					file, err := os.Open(uri.Opaque)
+					if err != nil {
+						return err
+					}
+					defer file.Close()
+
+					// Create a Parser and parse the file
+					parser := asm.CreateParser()
+					parser.ReadFromFile(file)
+
+					// Assemble the program.
+					insts, err := parser.Assemble()
+					if err != nil {
+						return err
+					}
+					instructions = insts
+				} else
+				if uri.Scheme == "builtin" {
+					insts := BuiltinRegistry[uri.Opaque]
+					if insts == nil {
+						return fmt.Errorf("compile: a builtin program of name '%s' does not exist", uri.Opaque)
+					}
+					instructions = insts
+				} else {
+					return fmt.Errorf("compile: unsupported URI scheme ('%s') used", uri.Scheme)
+				}
+
+				// Assemble the program into machine code
+				prog, err := asm.AssembleProgram(instructions)
+				if err != nil {
+					return err
+				}
+
+				// Run
+				cpu := emu.CreateLmcCpu()
+				memory := emu.CreateMemory(prog)
+				err = cpu.Execute(memory)
+				if err != nil {
+					return err
+				}
+
+				return nil
+			},
+		},
+	}
+
+	err := app.Run(os.Args)
 	if err != nil {
 		log.Fatal(err)
-		return
-	}
-
-	// JSON debuggery
-	if false {
-		bytes, err := json.MarshalIndent(instructions, "", "\t")
-		if err != nil {
-			log.Fatal(err)
-			return
-		}
-		fmt.Println(string(bytes))
-		return
-	}
-
-	// Assemble the program into RAM
-	prog, err := asm.AssembleProgram(instructions)
-	if err != nil {
-		log.Fatal(err)
-		return
-	}
-
-	// Debug assembled machine code
-	if false {
-		fmt.Printf("%v", prog)
-		return
-	}
-
-	// Run
-	cpu := emu.CreateLmcCpu()
-	memory := emu.CreateMemory(prog)
-	err = cpu.Execute(memory)
-	if err != nil {
-		log.Fatal(err)
-		return
 	}
 }

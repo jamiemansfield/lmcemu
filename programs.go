@@ -46,3 +46,7 @@ var Calculator = []*asm.Instruction {
 	asm.DAT(value_o),
 	asm.DAT(value_t),
 }
+
+var BuiltinRegistry = map[string][]*asm.Instruction{
+	"calculator": Calculator,
+}
