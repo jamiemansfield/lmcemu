@@ -39,8 +39,8 @@ func (p *Parser) ReadFromFile(file *os.File) {
 		p.sourceName = info.Name()
 	} else {
 		p.sourceName = "unknown"
-		fmt.Println(errors.New("parser('unknown'): a non-fatal error has occurred"))
-		fmt.Println(err)
+		log.Println(errors.New("parser('unknown'): a non-fatal error has occurred"))
+		log.Println(err)
 	}
 
 	scanner := bufio.NewScanner(file)

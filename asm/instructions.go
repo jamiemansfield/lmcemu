@@ -4,6 +4,8 @@ import (
 	"fmt"
 )
 
+// The type of an instruction, used for establishing whether the label
+// of an instruction needs to be evaluated when assembling.
 type InstructionType int
 
 const (

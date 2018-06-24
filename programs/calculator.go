@@ -1,4 +1,4 @@
-package main
+package programs
 
 import (
 	"github.com/jamiemansfield/lmcemu/asm"
@@ -13,6 +13,12 @@ var mode     = asm.CreateDataLabel(1)
 var value_o  = asm.CreateDataLabel(1)
 var value_t  = asm.CreateDataLabel(2)
 
+// A dual-function calculator program.
+// It will prompt for 3 inputs:
+//   1. The function to use (0 = addition, 1 = subtract)
+//   2. The first number to use
+//   3. The second number to use
+// The program will then output the result.
 var Calculator = []*asm.Instruction {
 	// START:
 	start.Apply(asm.INP()),
@@ -45,8 +51,4 @@ var Calculator = []*asm.Instruction {
 	asm.DAT(mode),
 	asm.DAT(value_o),
 	asm.DAT(value_t),
-}
-
-var BuiltinRegistry = map[string][]*asm.Instruction{
-	"calculator": Calculator,
 }

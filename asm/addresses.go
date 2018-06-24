@@ -1,5 +1,7 @@
 package asm
 
+// The type of an address reference, used for checking whether additional
+// processing needs to happen later on.
 type AddressType int
 
 const (
@@ -8,6 +10,7 @@ const (
 	ADDR_LABEL_DATA
 )
 
+// Establishes whether the address type is a label type, position or data.
 func (t AddressType) IsLabel() bool {
 	return t == ADDR_LABEL_DATA || t == ADDR_LABEL_POSITION
 }
@@ -55,6 +58,8 @@ func CreateDataLabel(value int) *AddressRef {
 	}
 }
 
+// Establishes whether the given address is valid, noting that LMC address are
+// only 3 digits.
 func IsValidAddress(address int) bool {
 	return address >= 0 && address <= 999
 }

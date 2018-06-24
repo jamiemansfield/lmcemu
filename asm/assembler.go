@@ -1,5 +1,6 @@
 package asm
 
+// Assembles the given /evaluated/ program into LMC machine code.
 func AssembleProgram(lines []*Instruction) ([100]int, error) {
 	var compiled = [100]int{}
 

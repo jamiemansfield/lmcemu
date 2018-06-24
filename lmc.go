@@ -10,6 +10,8 @@ import (
 	"github.com/mileusna/conditional"
 	"encoding/json"
 	"github.com/jamiemansfield/lmcemu/emu"
+	"github.com/jamiemansfield/lmcemu/programs"
+	"strings"
 )
 
 var (
@@ -49,7 +51,7 @@ func createAction(lmcFunc lmcFunc) cli.ActionFunc {
 			instructions = insts
 		} else
 		if uri.Scheme == "builtin" {
-			insts := BuiltinRegistry[uri.Opaque]
+			insts := programs.BuiltinRegistry[strings.ToLower(uri.Opaque)]
 			if insts == nil {
 				return fmt.Errorf("compile: a builtin program of name '%s' does not exist", uri.Opaque)
 			}
