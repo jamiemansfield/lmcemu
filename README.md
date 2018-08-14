@@ -1,5 +1,4 @@
 lmcemu
 ======
 
-lmcemu is a simple emulator for Little Man Computer. Eventually there will also be an included assembler and
-disassembler.
+lmcemu is a simple emulator for Little Man Computer. Licensed under the BSD 3-Clause License.

@@ -53,11 +53,11 @@ func createAction(lmcFunc lmcFunc) cli.ActionFunc {
 		if uri.Scheme == "builtin" {
 			insts := programs.BuiltinRegistry[strings.ToLower(uri.Opaque)]
 			if insts == nil {
-				return fmt.Errorf("compile: a builtin program of name '%s' does not exist", uri.Opaque)
+				return fmt.Errorf("cli: a builtin program of name '%s' does not exist", uri.Opaque)
 			}
 			instructions = insts
 		} else {
-			return fmt.Errorf("compile: unsupported URI scheme ('%s') used", uri.Scheme)
+			return fmt.Errorf("cli: unsupported URI scheme ('%s') used", uri.Scheme)
 		}
 
 		return lmcFunc(instructions)
